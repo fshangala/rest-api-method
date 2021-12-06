@@ -9,7 +9,16 @@ class Order extends Model
         'partner',
         'type',
         'submitted_by',
-        'campany_id',
-        'company_name'
+        'company_id',
+        'company_name',
+        'contact_first_name',
+        'contact_last_name',
+        'contact_title',
+        'contact_phone',
+        'contact_mobile',
+        'contact_email',
+        'exposure_id',
+        'udac',
+        'related_order',
     ];
 }

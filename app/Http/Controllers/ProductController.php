@@ -43,6 +43,7 @@ class ProductController extends Controller
                         "partner_id"=>$request->user()->id,
                         "product_id"=>$product_id,
                         "detail_id"=>$entry->id,
+                        "status"=>"pending"
                     ]);
 
                     $res["success"]=true;
@@ -74,6 +75,7 @@ class ProductController extends Controller
                         "partner_id"=>$request->user()->id,
                         "product_id"=>$product_id,
                         "detail_id"=>$entry->id,
+                        "status"=>"pending"
                     ]);
 
                     $res["success"]=true;

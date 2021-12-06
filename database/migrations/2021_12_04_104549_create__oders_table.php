@@ -13,22 +13,22 @@ class CreateOdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('oders', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->increments("id");
             $table->string("partner");
             $table->string("type");
             $table->string("submitted_by");
             $table->string("company_id");
             $table->string("company_name");
-            $table->string("contact_first_name")->null();
-            $table->string("contact_last_name")->null();
-            $table->string("contact_title")->null();
-            $table->string("contact_phone")->null();
-            $table->string("contact_mobile")->null();
-            $table->string("contact_email")->null();
-            $table->string("exposure_id")->null();
-            $table->string("udac")->null();
-            $table->string("related_order")->null();
+            $table->string("contact_first_name")->nullable();
+            $table->string("contact_last_name")->nullable();
+            $table->string("contact_title")->nullable();
+            $table->string("contact_phone")->nullable();
+            $table->string("contact_mobile")->nullable();
+            $table->string("contact_email")->nullable();
+            $table->string("exposure_id")->nullable();
+            $table->string("udac")->nullable();
+            $table->string("related_order")->nullable();
             $table->timestamps();
         });
     }
@@ -40,6 +40,6 @@ class CreateOdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('oders');
+        Schema::dropIfExists('orders');
     }
 }

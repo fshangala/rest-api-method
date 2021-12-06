@@ -34,3 +34,4 @@ $router->group(['prefix'=>'/cart'], function($router){
     $router->get('/', 'CartController@partnerCart');
 });
 $router->post('/order', "OrderController@order");
+$router->get('/orders', "OrderController@all");

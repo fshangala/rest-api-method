@@ -15,6 +15,21 @@ class OrderController extends Controller
     {
         $this->middleware('auth');
     }
+
+    public function all(Request $request)
+    {
+        $res = ["success"=>false, "message"=>"", "data"=>null];
+        $statusCode = 500;
+
+        $entries = Order::where("partner", $request->user()->id)->get();
+
+        $res['success'] = true;
+        $res['message'] = 'success!';
+        $res['data'] = $entries;
+        $statusCode = 200;
+
+        return response($res, $statusCode);
+    }
     
     public function order(Request $request)
     {
@@ -36,45 +51,50 @@ class OrderController extends Controller
         
         try {
             $inputData = $request->all();
-            $inputData["partner_id"] = $request->user()->id;
+            $inputData["partner"] = $request->user()->id;
 
-            //$order = Order::create($inputData);
-
-            $cart = Cart::where("partner_id", $request->user()->id)->get();
-            $list_items = array();
-            foreach($cart as $c){
-                $f_product = array();
-                $a_items = array();
-                $product = Product::where("id",$c->product_id)->first();
-                if ($product){
-                    $a_items = $product;
-                    if($product->type == "adword"){
-                        $adDetail = AdWordCampaign::where("id",$c->detail_id)->first();
-                        if($adDetail){
-                            $a_items["AdWordCampaign"] = $adDetail;
-                            //array_push($a_items, array("AdWordCampaign"=>$adDetail));
-                            //$f_product = array_merge(array($a_items),array("AdWordCampaign"=>$adDetail));
+            $cart = Cart::where("partner_id", $request->user()->id)->where("status", "pending")->get();
+            if (count($cart)>0){
+                $order = Order::create($inputData);
+    
+                $list_items = array();
+                foreach($cart as $c){
+                    $f_product = array();
+                    $a_items = array();
+                    $product = Product::where("id",$c->product_id)->first();
+                    if ($product){
+                        $a_items = $product;
+                        if($product->type == "adword"){
+                            $adDetail = AdWordCampaign::where("id",$c->detail_id)->first();
+                            if($adDetail){
+                                $a_items["AdWordCampaign"] = $adDetail;
+                            }
+                        } elseif ($product->type == "website"){
+                            $websiteDetail = WebsiteDetail::where("id", $c->detail_id)->first();
+                            if($websiteDetail){
+                                $a_items["WebsiteDetails"] = $websiteDetail;
+                            }
                         }
-                    } elseif ($product->type == "website"){
-                        $websiteDetail = WebsiteDetail::where("id", $c->detail_id)->first();
-                        if($websiteDetail){
-                            $a_items["WebsiteDetails"] = $websiteDetail;
-                            //array_push($a_items, array("WebSiteDetails"=>$websiteDetail));
-                            //$f_product = array_merge(array($a_items), array($websiteDetail));
-                        }
+                        $f_product = $a_items;
                     }
-                    $f_product = $a_items;
+                    array_push($list_items, $f_product);
                 }
-                array_push($list_items, $f_product);
+                foreach($cart as $c){
+                    $c->update(["status"=>"ordered"]);
+                }
+                $allData = $order;
+                $allData["ListItems"]=$list_items;
+    
+                $res['success'] = true;
+                $res['message'] = 'success!';
+                $res['data'] = $allData;
+                $statusCode = 200;
+            } else {
+                $res['success'] = false;
+                $res['message'] = "Add some products in the cart";
+                $statusCode = 422;
             }
-            $allData = $inputData;
-            $allData["ListItems"]=$list_items;
-            //$allData = array_merge($inputData, ["ListItems"=>$list_items]);
 
-            $res['success'] = true;
-            $res['message'] = 'success!';
-            $res['data'] = $allData;
-            $statusCode = 200;
         } catch (\Illuminate\Database\QueryException $ex) {
             $res['success'] = false;
             $res['message'] = $ex->getMessage();
