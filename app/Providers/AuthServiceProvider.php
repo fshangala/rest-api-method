@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\User;
+use App\Models\Partner;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Authorization;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -35,7 +36,7 @@ class AuthServiceProvider extends ServiceProvider
                 try{
                     $authorization = Authorization::where("token", $request->header("Authorization"))->first();
                     if($authorization){
-                        $user = User::where("id", $authorization->user_id)->first();
+                        $user = Partner::where("id", $authorization->partner_id)->first();
                         return $user;
                     } else {
                         return null;
